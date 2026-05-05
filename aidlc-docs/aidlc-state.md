@@ -5,7 +5,7 @@
 - **Project Type**: Greenfield
 - **Start Date**: 2026-05-03T00:00:00Z
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: U0 Shared Foundation - Code Generation (workflow 提案、ユーザー確認待ち)
+- **Current Stage**: U0 Shared Foundation - Code Generation (7 PR 直列マージ方針 / PR #1 作業中)
 
 ## Workspace State
 - **Existing Code**: No

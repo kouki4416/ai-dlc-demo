@@ -1,0 +1,194 @@
+// prisma/schema.prisma
+// Owner: U0 Shared Foundation
+// Source of truth: aidlc-docs/construction/u0-shared-foundation/functional-design/domain-entities.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// =========================
+// Auth / Users (U1)
+// =========================
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  role           UserRole @default(SUBMITTER)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  ideas          Idea[]
+  scores         Score[]              @relation("PanelScores")
+  refreshTokens  RefreshToken[]
+  passwordResets PasswordResetToken[]
+
+  @@index([role, isActive])
+  @@index([email])
+}
+
+enum UserRole {
+  SUBMITTER
+  PANEL
+  ADMIN
+}
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// =========================
+// Evaluation Cycle (U6)
+// =========================
+
+model Cycle {
+  id          String      @id @default(cuid())
+  name        String      @db.VarChar(200)
+  status      CycleStatus @default(OPEN)
+  startsAt    DateTime
+  endsAt      DateTime
+  closedAt    DateTime?
+  top3IdeaIds Json?
+  createdById String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  ideas  Idea[]
+  scores Score[]
+
+  @@index([status])
+  @@index([endsAt])
+}
+
+enum CycleStatus {
+  OPEN
+  CLOSED
+}
+
+// =========================
+// Ideas (U2)
+// =========================
+
+model Idea {
+  id           String     @id @default(cuid())
+  title        String     @db.VarChar(120)
+  description  String     @db.Text
+  status       IdeaStatus @default(DRAFT)
+  submitterId  String
+  cycleId      String
+  publishedAt  DateTime?
+  deletedAt    DateTime?
+  deleteReason String?    @db.VarChar(500)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  submitter   User             @relation(fields: [submitterId], references: [id])
+  cycle       Cycle            @relation(fields: [cycleId], references: [id])
+  attachments IdeaAttachment[]
+  scores      Score[]
+
+  @@index([cycleId, status])
+  @@index([submitterId])
+  @@index([status, publishedAt])
+}
+
+enum IdeaStatus {
+  DRAFT
+  PUBLISHED
+  DELETED
+}
+
+model IdeaAttachment {
+  id         String   @id @default(cuid())
+  ideaId     String
+  filename   String   @db.VarChar(255)
+  storedPath String   @db.VarChar(500)
+  mimeType   String   @db.VarChar(50)
+  sizeBytes  Int
+  createdAt  DateTime @default(now())
+
+  idea Idea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+}
+
+// =========================
+// Scores (U3)
+// =========================
+
+model Score {
+  id          String      @id @default(cuid())
+  panelId     String
+  ideaId      String
+  cycleId     String
+  feasibility Int         @db.SmallInt
+  impact      Int         @db.SmallInt
+  innovation  Int         @db.SmallInt
+  comment     String?     @db.Text
+  status      ScoreStatus @default(DRAFT)
+  confirmedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  panel User  @relation("PanelScores", fields: [panelId], references: [id])
+  idea  Idea  @relation(fields: [ideaId], references: [id])
+  cycle Cycle @relation(fields: [cycleId], references: [id])
+
+  @@unique([panelId, ideaId])
+  @@index([cycleId, status])
+  @@index([ideaId])
+  @@index([panelId, cycleId])
+}
+
+enum ScoreStatus {
+  DRAFT
+  CONFIRMED
+}
+
+// =========================
+// Audit Log (U0 Cross-cutting)
+// =========================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String   @db.VarChar(50)
+  targetType String?  @db.VarChar(50)
+  targetId   String?  @db.VarChar(50)
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([targetType, targetId])
+}
