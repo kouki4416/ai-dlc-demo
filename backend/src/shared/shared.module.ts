@@ -1,17 +1,29 @@
 import { Global, Module } from '@nestjs/common';
+import { AuditModule } from './audit/audit.module';
+import { CommonModule } from './common/common.module';
+import { HealthModule } from './health/health.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SseModule } from './sse/sse.module';
 
-// SharedModule (@Global) — single import surface for all shared infra.
-//
-// Current PR (PR 2 / 7): Prisma + Logger
-// Future PRs:
-//   PR 3 — CommonModule (DTO / Pipe / Filter / Interceptor / Decorator / utils)
-//   PR 4 — Auth (JWT strategy + Guards)
-//   PR 5 — AuditModule + SseHubModule + HealthModule
+// SharedModule (@Global) — single import surface for all shared infrastructure.
 @Global()
 @Module({
-  imports: [PrismaModule, LoggerModule],
-  exports: [PrismaModule, LoggerModule],
+  imports: [
+    PrismaModule,
+    LoggerModule,
+    CommonModule,
+    AuditModule,
+    SseModule,
+    HealthModule,
+  ],
+  exports: [
+    PrismaModule,
+    LoggerModule,
+    CommonModule,
+    AuditModule,
+    SseModule,
+    HealthModule,
+  ],
 })
 export class SharedModule {}

@@ -5,9 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
-
-// NOTE: GlobalExceptionFilter / TimingInterceptor are wired in PR 3 (backend common).
-// Until then, the bootstrap stays minimal.
+import { GlobalExceptionFilter } from './shared/common/filters/global-exception.filter';
+import { TimingInterceptor } from './shared/common/interceptors/timing.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -34,6 +33,9 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalInterceptors(new TimingInterceptor());
 
   if (config.get<string>('NODE_ENV') !== 'production') {
     const swaggerCfg = new DocumentBuilder()

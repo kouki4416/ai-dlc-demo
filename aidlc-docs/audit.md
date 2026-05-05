@@ -393,3 +393,30 @@ backend/* は untracked のまま PR #2 用に保留。
 **User Input**: "merged"
 **AI Response**: PR #1 (skeleton + prisma) main にマージ確認。git checkout main && pull で同期、feat/u0-2-backend-bootstrap ブランチ作成。backend 雛形 (package/tsconfig/nest-cli/jest/Dockerfile) + main.ts + config + AppModule + SharedModule (Prisma + Logger のみの placeholder) で PR #2 を構築。GlobalExceptionFilter / TimingInterceptor は PR #3 で wiring 予定のため main.ts から一旦除外、コメントで明記。backend/src/shared/common/* は PR #3 用にローカル保留 (untracked)。
 **Context**: CONSTRUCTION - U0 Code Generation PR #2 開始
+
+## PR #2 作成完了
+**Timestamp**: 2026-05-05T12:15:00Z
+**User Input**: (該当なし — システムアクション)
+**AI Response**: feat/u0-2-backend-bootstrap を main ベースで PR 化:
+- commit 519762c: feat(u0-backend): bootstrap nest backend with prisma + logger (PR 2/7) — 15 files / +496 lines
+- push: origin/feat/u0-2-backend-bootstrap
+- PR URL: https://github.com/kouki4416/ai-dlc-demo/pull/2
+backend/src/shared/common/dto/* (PR #3 用) は untracked のままローカル保留。
+**Context**: CONSTRUCTION - U0 Code Generation PR #2 完了
+
+## Code Generation - PR 粒度を「モジュール単位 (大きめ)」に緩和
+**Timestamp**: 2026-05-05T12:30:00Z
+**User Input**: "ここからはpr大きめのモジュール単位でいいです"
+**AI Response**: 残り 5 PR を 2 PR に再集約。新計画:
+- PR #3 (feat/u0-3-backend): backend 残り全部 (CommonModule + Auth Guards + Audit + SseHub + Health + SharedModule 統合 + main.ts wiring + 全 unit tests) 約 50 ファイル
+- PR #4 (feat/u0-4-frontend): frontend 全部 + docs (雛形 + lib + types + context + hooks + components + tests + code-summary + README) 約 38 ファイル
+memory に user feedback を記録 (feedback_pr_granularity.md)。
+**Context**: CONSTRUCTION - U0 Code Generation 戦略再調整
+
+---
+
+## PR #2 マージ承認 → PR #3 着手 (consolidated backend)
+**Timestamp**: 2026-05-05T12:35:00Z
+**User Input**: "merged"
+**AI Response**: PR #2 main マージ確認、feat/u0-3-backend ブランチ作成。backend 残り全機能を一括生成: error-response.dto / parse-cuid.pipe / global-exception.filter / timing+logger interceptors / @Public/@Roles/@CurrentUser decorators / JwtStrategy / JwtAuthGuard / RolesGuard / ResourceOwnerGuard (factory) / hash-token / sanitize-filename / round-to / file-storage utils / CommonModule / AuditService+Module+Types / SseHub+Controller+Module+Types / Health (controller / indicator / module) / SharedModule 統合 / main.ts に Filter+Interceptor wiring / 7 unit tests。
+**Context**: CONSTRUCTION - U0 Code Generation PR #3 着手
