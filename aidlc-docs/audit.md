@@ -376,3 +376,20 @@ state 更新および完了メッセージ提示、承認待ち。
 **User Input**: "ok"
 **AI Response**: 7 PR 直列マージ方針承認。PR #1 (feat/u0-1-skeleton-prisma) 作成開始: ルート (docker-compose / .env.example / .dockerignore) + prisma (schema / seed) + AI-DLC docs (state / audit / plan) を含む。
 **Context**: CONSTRUCTION - U0 Code Generation PR #1 開始
+
+## PR #1 作成完了
+**Timestamp**: 2026-05-05T12:00:00Z
+**User Input**: (該当なし — システムアクション)
+**AI Response**: feat/u0-1-skeleton-prisma を main ベースで PR 化:
+- ブランチリネーム: feat/u0-shared-foundation → feat/u0-1-skeleton-prisma
+- commit 559ec28: feat(u0): scaffold project skeleton and prisma schema (PR 1/7) — 8 files / +753 lines
+- push: origin/feat/u0-1-skeleton-prisma
+- PR URL: https://github.com/kouki4416/ai-dlc-demo/pull/1
+backend/* は untracked のまま PR #2 用に保留。
+**Context**: CONSTRUCTION - U0 Code Generation PR #1 完了
+
+## PR #1 マージ承認 → PR #2 着手
+**Timestamp**: 2026-05-05T12:10:00Z
+**User Input**: "merged"
+**AI Response**: PR #1 (skeleton + prisma) main にマージ確認。git checkout main && pull で同期、feat/u0-2-backend-bootstrap ブランチ作成。backend 雛形 (package/tsconfig/nest-cli/jest/Dockerfile) + main.ts + config + AppModule + SharedModule (Prisma + Logger のみの placeholder) で PR #2 を構築。GlobalExceptionFilter / TimingInterceptor は PR #3 で wiring 予定のため main.ts から一旦除外、コメントで明記。backend/src/shared/common/* は PR #3 用にローカル保留 (untracked)。
+**Context**: CONSTRUCTION - U0 Code Generation PR #2 開始
